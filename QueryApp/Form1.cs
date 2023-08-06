@@ -22,7 +22,7 @@ namespace QueryApp
         {
             tb_processState.Clear();
             progressBar.Value = 0;
-
+            btn_startProcess.Enabled = false;
 
             Guid id = DemoMethods.StartProcess();
             ProcessState processState = DemoMethods.GetProcessState(id);
@@ -40,30 +40,34 @@ namespace QueryApp
 
                 processState = DemoMethods.GetProcessState(id);
             }
+            btn_startProcess.Enabled = true;
             switch (processState)
             {
                 case ProcessState.None:
-                    AddLog(ProcessMessages.QueryInactive, 0);
+                    AddLog(ProcessMessages.QueryInactive);
                     break;
                 case ProcessState.Success:
                     AddLog(ProcessMessages.QuerySucceeded);
                     break;
                 case ProcessState.Failed:
-                    AddLog(ProcessMessages.QueryFailed, 0);
+                    AddLog(ProcessMessages.QueryFailed);
                     throw new InvalidOperationException(ProcessMessages.QueryFailed);
                 default:
                     throw new NotSupportedException();
             }
 
         }
+
+        /*From API*/
         private async void btn_startProcess2_Click(object sender, EventArgs e)
         {
-            tb_processState.Clear();
-            progressBar.Value = 0;
+            tb_processState2.Clear();
+            progressBar2.Value = 0;
+            btn_startProcess2.Enabled = false;
 
             HttpClient client = new()
             {
-                BaseAddress=new Uri("http://localhost:5185/")
+                BaseAddress = new Uri("http://localhost:5185/")
             };
 
             /*Get Guid id*/
@@ -75,40 +79,41 @@ namespace QueryApp
             HttpResponseMessage stateResponse = await client.GetAsync($"api/Query/getprocessstate?id={id}");
             stateResponse.EnsureSuccessStatusCode();
             Result? result = await stateResponse.Content.ReadFromJsonAsync<Result>();
+
+
             int progress = 0;
 
             while (result?.ProcessState == ProcessState.Active)
             {
-               
+                AddLog2(result.Message, progress);
+                await Task.Delay(1000);
 
                 /*Progress simulation*/
                 if (progress <= 5) progress++;
                 /*-------------------*/
 
-                AddLog2(result.Message, progress);
-                await Task.Delay(1000);
                 stateResponse = await client.GetAsync($"api/Query/getprocessstate?id={id}");
                 stateResponse.EnsureSuccessStatusCode();
                 result = await stateResponse.Content.ReadFromJsonAsync<Result>();
             }
+            btn_startProcess2.Enabled=true;
             switch (result?.ProcessState)
             {
                 case ProcessState.None:
-                    AddLog2(result.Message, 0);
+                    AddLog2(result.Message);
                     break;
                 case ProcessState.Success:
                     AddLog2(result.Message);
                     break;
                 case ProcessState.Failed:
-                    AddLog2(result.Message, 0);
+                    AddLog2(result.Message);
                     throw new InvalidOperationException(ProcessMessages.QueryFailed);
                 default:
                     throw new NotSupportedException();
             }
-
-
         }
-        private void AddLog(string processMessage = "", int progress = 5)
+
+        private void AddLog(string processMessage = "", int progress = 0)
         {
             if (tb_processState.InvokeRequired || progressBar.InvokeRequired)
             {
@@ -121,7 +126,8 @@ namespace QueryApp
                 progressBar.Value = progress * 100 / 5;
             }
         }
-        private void AddLog2(string processMessage = "", int progress2 = 5)
+
+        private void AddLog2(string processMessage = "", int progress2 = 0)
         {
             if (tb_processState2.InvokeRequired || progressBar2.InvokeRequired)
             {

@@ -9,7 +9,7 @@ namespace QueryApp
 {
     internal static class DemoMethods
     {
-        private static ConcurrentDictionary<Guid, ProcessState> _queryStates = new();
+        public static ConcurrentDictionary<Guid, ProcessState> _queryStates = new();
 
 
         internal static ProcessState GetProcessState(Guid id)
