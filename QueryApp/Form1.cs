@@ -13,9 +13,14 @@ namespace QueryApp
 {
     public partial class Form1 : Form
     {
+        private static HttpClient _httpClient;
         public Form1()
         {
             InitializeComponent();
+            _httpClient = new()
+            {
+                BaseAddress = new Uri("http://localhost:5185/")
+            };
         }
 
         private async void btn_startProcess_Click(object sender, EventArgs e)
@@ -65,18 +70,15 @@ namespace QueryApp
             progressBar2.Value = 0;
             btn_startProcess2.Enabled = false;
 
-            HttpClient client = new()
-            {
-                BaseAddress = new Uri("http://localhost:5185/")
-            };
+            
 
             /*Get Guid id*/
-            HttpResponseMessage response = await client.GetAsync("api/Query/startprocess");
+            HttpResponseMessage response = await _httpClient.GetAsync("api/Query/startprocess");
             response.EnsureSuccessStatusCode();
             Guid id = await response.Content.ReadFromJsonAsync<Guid>();
 
             /*Get Process State*/
-            HttpResponseMessage stateResponse = await client.GetAsync($"api/Query/getprocessstate?id={id}");
+            HttpResponseMessage stateResponse = await _httpClient.GetAsync($"api/Query/getprocessstate?id={id}");
             stateResponse.EnsureSuccessStatusCode();
             Result? result = await stateResponse.Content.ReadFromJsonAsync<Result>();
 
@@ -92,11 +94,11 @@ namespace QueryApp
                 if (progress <= 5) progress++;
                 /*-------------------*/
 
-                stateResponse = await client.GetAsync($"api/Query/getprocessstate?id={id}");
+                stateResponse = await _httpClient.GetAsync($"api/Query/getprocessstate?id={id}");
                 stateResponse.EnsureSuccessStatusCode();
                 result = await stateResponse.Content.ReadFromJsonAsync<Result>();
             }
-            btn_startProcess2.Enabled=true;
+            btn_startProcess2.Enabled = true;
             switch (result?.ProcessState)
             {
                 case ProcessState.None:
@@ -111,6 +113,55 @@ namespace QueryApp
                 default:
                     throw new NotSupportedException();
             }
+        }
+        private async void btn_ProgressController_Click(object sender, EventArgs e)
+        {
+            tb_processState2.Clear();
+            progressBar2.Value = 0;
+            btn_startProcess2.Enabled = false;
+
+
+
+            /*Get Guid id*/
+            HttpResponseMessage response = await _httpClient.GetAsync("api/Progress/startprocess");
+            response.EnsureSuccessStatusCode();
+            Guid id = await response.Content.ReadFromJsonAsync<Guid>();
+
+            /*Get Process State*/
+            HttpResponseMessage stateResponse = await _httpClient.GetAsync($"api/Progress/getprocessstate?id={id}");
+            stateResponse.EnsureSuccessStatusCode();
+            Result? result = await stateResponse.Content.ReadFromJsonAsync<Result>();
+
+
+
+            while (result?.ProcessState == ProcessState.Active)
+            {
+
+                AddLog2(result.Message,result.Progress );
+                await Task.Delay(1000);
+
+                
+
+                stateResponse = await _httpClient.GetAsync($"api/Progress/getprocessstate?id={id}");
+                stateResponse.EnsureSuccessStatusCode();
+                result = await stateResponse.Content.ReadFromJsonAsync<Result>();
+            }
+            btn_startProcess2.Enabled = true;
+            switch (result?.ProcessState)
+            {
+                case ProcessState.None:
+                    AddLog2(result.Message);
+                    break;
+                case ProcessState.Success:
+                    AddLog2(result.Message, result.Progress);
+                    break;
+                case ProcessState.Failed:
+                    AddLog2(result.Message);
+                    throw new InvalidOperationException(ProcessMessages.QueryFailed);
+                default:
+                    throw new NotSupportedException();
+            }
+
         }
 
         private void AddLog(string processMessage = "", int progress = 0)
@@ -141,5 +192,6 @@ namespace QueryApp
             }
         }
 
+        
     }
 }

@@ -15,6 +15,7 @@ namespace QueryApp
         }
         public ProcessState ProcessState { get; set; }
         public string Message { get; set; }
+        public int Progress { get; set; }
     }
     public enum ProcessState
     {

@@ -34,6 +34,7 @@
             btn_startProcess2 = new Button();
             tb_processState2 = new TextBox();
             progressBar2 = new ProgressBar();
+            btn_ProgressController = new Button();
             SuspendLayout();
             // 
             // btn_startProcess
@@ -48,16 +49,16 @@
             // 
             // tb_processState
             // 
-            tb_processState.Location = new Point(12, 103);
+            tb_processState.Location = new Point(12, 109);
             tb_processState.Multiline = true;
             tb_processState.Name = "tb_processState";
-            tb_processState.Size = new Size(343, 150);
+            tb_processState.Size = new Size(343, 260);
             tb_processState.TabIndex = 1;
             // 
             // progressBar
             // 
             progressBar.ForeColor = Color.MediumSeaGreen;
-            progressBar.Location = new Point(12, 59);
+            progressBar.Location = new Point(12, 61);
             progressBar.Name = "progressBar";
             progressBar.Size = new Size(343, 29);
             progressBar.TabIndex = 2;
@@ -74,29 +75,40 @@
             // 
             // tb_processState2
             // 
-            tb_processState2.Location = new Point(378, 103);
+            tb_processState2.Location = new Point(378, 154);
             tb_processState2.Multiline = true;
             tb_processState2.Name = "tb_processState2";
-            tb_processState2.Size = new Size(343, 150);
+            tb_processState2.Size = new Size(343, 215);
             tb_processState2.TabIndex = 1;
             // 
             // progressBar2
             // 
             progressBar2.ForeColor = Color.MediumSeaGreen;
-            progressBar2.Location = new Point(378, 59);
+            progressBar2.Location = new Point(378, 109);
             progressBar2.Name = "progressBar2";
             progressBar2.Size = new Size(343, 29);
             progressBar2.TabIndex = 2;
+            // 
+            // btn_ProgressController
+            // 
+            btn_ProgressController.Location = new Point(378, 61);
+            btn_ProgressController.Name = "btn_ProgressController";
+            btn_ProgressController.Size = new Size(343, 29);
+            btn_ProgressController.TabIndex = 0;
+            btn_ProgressController.Text = "Start Process w/ progress";
+            btn_ProgressController.UseVisualStyleBackColor = true;
+            btn_ProgressController.Click += btn_ProgressController_Click;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(736, 276);
+            ClientSize = new Size(820, 381);
             Controls.Add(progressBar2);
             Controls.Add(progressBar);
             Controls.Add(tb_processState2);
             Controls.Add(tb_processState);
+            Controls.Add(btn_ProgressController);
             Controls.Add(btn_startProcess2);
             Controls.Add(btn_startProcess);
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
@@ -115,5 +127,6 @@
         private Button btn_startProcess2;
         private TextBox tb_processState2;
         private ProgressBar progressBar2;
+        private Button btn_ProgressController;
     }
 }
