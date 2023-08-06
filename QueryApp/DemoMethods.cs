@@ -7,15 +7,12 @@ using System.Threading.Tasks;
 
 namespace QueryApp
 {
-    internal class DemoMethods
+    internal static class DemoMethods
     {
-        protected internal ConcurrentDictionary<Guid, ProcessState> _queryStates;
-        public DemoMethods()
-        {
-            _queryStates = new ConcurrentDictionary<Guid, ProcessState>();
-        }
+        private static ConcurrentDictionary<Guid, ProcessState> _queryStates = new();
 
-        protected internal ProcessState GetProcessState(Guid id)
+
+        internal static ProcessState GetProcessState(Guid id)
         {
             bool processStateExists = _queryStates.TryGetValue(id, out ProcessState processState);
             if (processStateExists)
@@ -23,14 +20,14 @@ namespace QueryApp
             else
                 return ProcessState.None;
         }
-        protected internal Guid StartProcess()
+        internal static Guid StartProcess()
         {
             Guid id = Guid.NewGuid();
             Task.Run(() => Query(id));
             _queryStates.TryAdd(id, ProcessState.Active);
             return id;
         }
-        protected internal async Task Query(Guid id)
+        private static async Task Query(Guid id)
         {
             try
             {

@@ -6,12 +6,15 @@ using System.Threading.Tasks;
 
 namespace QueryApp
 {
-
-    public interface IResult
+    public class Result
     {
-        ProcessState ProcessState { get; }
-        string Message { get; }
-        float Progress { get; }
+
+        public Result()
+        {
+
+        }
+        public ProcessState ProcessState { get; set; }
+        public string Message { get; set; }
     }
     public enum ProcessState
     {
